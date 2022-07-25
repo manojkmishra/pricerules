@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Price Rules</h1>
+
+    <div style="padding-bottom: 20px">
+      <h3>Test Case 1: SecondBite</h3>
+      <p>
+        Products added:
+        <code>classic, classic, classic, classic, Standout </code>
+      </p>
+      > ActualTotal: <b style="display: inline" id="test11"> </b><br />
+      > RuleDiscountedTotal: <b style="display: inline" id="test1"> </b>
+    </div>
+
+    <div style="padding-bottom: 20px">
+      <p>Products added: <code>stand_out_ad</code></p>
+      > ActualTotal: <b style="display: inline" id="test22"> </b><br />
+      > RuleDiscountedTotal: <b style="display: inline" id="test2"> </b>
+    </div>
+
+    <div style="padding-bottom: 20px">
+      <p>
+        Products added:
+        <code
+          >stand_out_ad,stand_out_ad,stand_out_ad,stand_out_ad,stand_out_ad,premium_ad</code
+        >
+      </p>
+      > ActualTotal: <b style="display: inline" id="test33"> </b><br />
+      > RuleDiscountedTotal: <b style="display: inline" id="test3"> </b>
+    </div>
+
+    <script>
+      /***---------- Product Listing--------------------------- */
+      var products = {
+        classic: {
+          id: "classic_ad",
+          name: "Classic Ad",
+          desc: "Offers the most basic level of advertisement",
+          price: 269.99,
+        },
+        standout: {
+          id: "stand_out_ad",
+          name: "Classic Ad",
+          desc: "Allows advertisers to use a company logo and use a longer presentation text",
+          price: 322.99,
+        },
+        premium: {
+          id: "premium_ad",
+          name: "Classic Ad",
+          desc: "Same benefits as Standout Ad, but also puts the advertisement at the top of the results, allowing higher visibility",
+          price: 394.99,
+        },
+      };
+
+      /*** ------- Pricing Rules ---constructor fn------- */
+      function Rule3for2() {
+        //classic ads- 3 for 2
+        this.applyRule = function (
+          items //this inside non arrow fn will apply to the calling
+        ) {
+          console.log("apply Rule3for2- items", items);
+          var sum = 0;
+          var productIds = [];
+          var classic_count = 0;
+          var standout_count = 0;
+          var premium_count = 0;
+          for (var i = 0; i < items.length; i++) {
+            productIds.push(items[i].id);
+            if (items[i].id == "classic_ad") {
+              classic_count++;
+              if (classic_count == 3) {
+                classic_count = 0;
+                continue;
+              }
+            }
+            sum += items[i].price;
+          }
+          return sum;
+        };
+      }
+      function RulePriceDrop() {
+        //------- Price Rule - pricedrop for stand_out_ad
+        this.applyRule = function (items) {
+          console.log("apply RulePriceDrop- items", items);
+          var sum = 0;
+          var productIds = [];
+          var standout_count = 0;
+          for (var i = 0; i < items.length; i++) {
+            productIds.push(items[i].id);
+            if (items[i].id == "stand_out_ad") {
+              standout_count++;
+              sum += items[i].price - 23; //(items[i].price-23) ie 322.99-23=299.99
+              continue;
+            }
+            sum += items[i].price;
+          }
+          console.log("price drop=", sum);
+          return sum;
+        };
+      }
+      function Rule5for4nPriceDrop() {
+        //------- Price Rule - pricedrop for stand_out_ad
+        this.applyRule = function (items) {
+          console.log("apply RulePriceDrop- items", items);
+          var sum = 0;
+          var productIds = [];
+          var standout_count = 0;
+          premium_count = 0;
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].id == "stand_out_ad") {
+              standout_count++;
+              if (standout_count == 5) {
+                standout_count = 0;
+                continue;
+              }
+            } else if (items[i].id == "premium_ad") {
+              premium_count++;
+              sum += items[i].price - 5; //(items[i].price-23) ie 322.99-23=299.99
+              continue;
+            }
+            sum += items[i].price;
+          }
+          console.log("price drop=", sum);
+          return sum;
+        };
+      }
+      /*** ------------------Checkout--------------------- */
+      function Checkout(priceRules) {
+        this.items = [];
+        this.pricingRules = priceRules;
+        this.add = function (item) {
+          this.items.push(item);
+        };
+        this.actualTotal =
+          function () // Total price of the items without Price Rules
+          {
+            var sum = 0;
+            this.items.forEach(function (value, index) {
+              sum += value.price;
+            });
+            console.log("checkout--sum wihtout any price rule=", sum);
+            return sum;
+          };
+        // Total price of the items WITH Price Rules
+        this.discountedTotal = function () {
+          console.log(
+            "checkout--sum with price rule=",
+            this.pricingRules.applyRule(this.items)
+          );
+          return this.pricingRules.applyRule(this.items);
+        };
+      }
+
+      /*** -----------------Tests----------------------*/
+      // --------- SecondBite-------
+      var secondBitePricingRule = new Rule3for2();
+      var secondBitePricingRuleCheckout = new Checkout(secondBitePricingRule);
+      secondBitePricingRuleCheckout.add(products.classic);
+      secondBitePricingRuleCheckout.add(products.classic);
+      secondBitePricingRuleCheckout.add(products.classic);
+      secondBitePricingRuleCheckout.add(products.classic);
+      secondBitePricingRuleCheckout.add(products.standout);
+      test11 = secondBitePricingRuleCheckout.actualTotal();
+      test1 = secondBitePricingRuleCheckout.discountedTotal();
+      //------------- Axil Coffee Roasters--------
+      var axilCoffeePricingRule = new RulePriceDrop();
+      var axilCoffeePricingRuleCheckout = new Checkout(axilCoffeePricingRule);
+
+      axilCoffeePricingRuleCheckout.add(products.standout);
+      test22 = axilCoffeePricingRuleCheckout.actualTotal();
+      test2 = axilCoffeePricingRuleCheckout.discountedTotal();
+
+      //------------------ MYER--------------------------
+      var MyerPricingRule = new Rule5for4nPriceDrop();
+      var MyerPricingRuleCheckout = new Checkout(MyerPricingRule);
+
+      MyerPricingRuleCheckout.add(products.premium);
+      MyerPricingRuleCheckout.add(products.standout);
+      MyerPricingRuleCheckout.add(products.standout);
+      MyerPricingRuleCheckout.add(products.standout);
+      MyerPricingRuleCheckout.add(products.standout);
+      MyerPricingRuleCheckout.add(products.standout);
+      test33 = MyerPricingRuleCheckout.actualTotal();
+      test3 = MyerPricingRuleCheckout.discountedTotal();
+
+      // ---------------------Show results
+      document.getElementById("test1").innerHTML = test1;
+      document.getElementById("test11").innerHTML = test11;
+      document.getElementById("test2").innerHTML = test2;
+      document.getElementById("test22").innerHTML = test22;
+      document.getElementById("test3").innerHTML = test3;
+      document.getElementById("test33").innerHTML = test33;
+    </script>
+  </body>
+</html>
