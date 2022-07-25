@@ -123,6 +123,10 @@ export default {
         this.rule5for4nPriceDrop();
         this.actualTotalFn();
       } //myer
+      if (this.selectedCustomer.id == 4) {
+        this.actualTotalFn();
+        this.discountedTotal=this.actualTotal
+      } //myer
     },
     actualTotalFn() { // Total price of the items without Price Rules
       var sum = 0;

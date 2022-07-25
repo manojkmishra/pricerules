@@ -26,12 +26,7 @@
     <v-app-bar
       app
       color="primary"
-      dark
-      
-      prominent
-      src="mountains.jpg"
-      prominent
-     
+      dark     
     >
       <template v-slot:img="{ props }">
         <v-img
