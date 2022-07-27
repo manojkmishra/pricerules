@@ -63,7 +63,7 @@
     data: () => ({ drawer: null,
     items: [
           { title: 'Price List', icon: 'mdi-format-list-checks',to:'/' },
-          { title: 'About', icon: 'mdi-help-box', to:'/about' },
+          { title: 'User Guide', icon: 'mdi-help-box', to:'/about' },
           // { title: 'cccc', icon: 'mdi-help-box', to:'/about' },
         ],
         }),
