@@ -1,9 +1,25 @@
 <template>
   <div class="home">
-    <p
-      class="text-h4 text--primary d-flex justify-center align-center mt-5 mb-5"
-    >
-      Customers:
+    
+
+    <v-card max-width="60%" class="mx-auto">
+      <v-card-text>
+        <p class="text-h5 text--primary mb-5">          
+          Checkout:<v-chip > Selected Customer: <span class="text-h6 text--primary">{{ selectedCustomer.name }}</span></v-chip><br>
+          <v-chip> ActualTotal-{{ actualTotal }}</v-chip>
+          <v-chip> discountedTotal-{{ discountedTotal }}</v-chip>
+        </p>
+        <p>Added Products</p>
+
+        <div class="text--primary">
+          <v-chip v-for="(task, i) in selectedProducts" :key="task.id + i">
+            {{ task.id }}
+          </v-chip>
+        </div>
+      </v-card-text>
+    </v-card>
+<p class="text-h6 text--primary d-flex justify-center align-center mt-5 mb-5">
+      Select Customers:
       <v-btn
         class="primary justify-center align-center mx-10"
         v-for="(task, i) in customers"
@@ -13,26 +29,8 @@
         {{ task.name }}
       </v-btn>
     </p>
-
-    <v-card max-width="60%" class="mx-auto">
-      <v-card-text>
-        <p class="text-h4 text--primary mb-5">
-          <v-chip> Selected Customer: {{ selectedCustomer.name }}</v-chip>
-          Checkout:<v-chip> discountedTotal-{{ discountedTotal }}</v-chip>
-          <v-chip> ActualTotal-{{ actualTotal }}</v-chip>
-        </p>
-        <p>Selected Products</p>
-
-        <div class="text--primary">
-          <v-chip v-for="(task, i) in selectedProducts" :key="task.id + i">
-            {{ task.id }}
-          </v-chip>
-        </div>
-      </v-card-text>
-    </v-card>
-
     <v-list class="pt-0" flat>
-      <p class="text--primary text-h4 mt-5 ml-5">Products:</p>
+      <p class="text--primary text-h6 mt-5 mr-5 d-flex flex-row-reverse">Add Products</p>
       <div v-for="task in products" :key="task.id">
         <v-list-item :class="{ 'blue lighten-5': task.done }">
           <template v-slot:default>
@@ -44,7 +42,7 @@
               >
             </v-list-item-content>
             <v-btn
-              @click.stop="addproduct(task)"
+              @click.stop="addproduct(task,selectedCustomer.id)"
               class="mx-2"
               fab
               dark
@@ -66,7 +64,6 @@ export default {
     return {
       discountedTotal: 0,
       actualTotal: 0,
-      newTaskTitle: "hello",
       selectedProducts: [],
       selectedCustomer: { name: "Default", id: 4 },
       products: [
@@ -104,39 +101,28 @@ export default {
       this.actualTotal = 0;
       this.selectedProducts = [];
     },
-    addproduct(P) {
-      this.selectedProducts.push(P);
-      this.Checkout();
-      this.actualTotalFn();
+    addproduct(a,b) {//a->product added, b->customer id
+      this.selectedProducts.push(a);
+      //higher order function checkout(rule) called
+      if (b == 1) {  this.checkout(this.rule3for2) } // SecondBite 
+      else if (b == 2) {  this.checkout(this.rulePriceDrop) } //axil coffee
+      else if (b == 3) {  this.checkout(this.rule5for4nPriceDrop) } //myer
+      else {  this.actualTotalFn();  this.discountedTotal=this.actualTotal } //default customers
+    },
+    checkout(rule){ //higher order function defn - taking rule fn as parameter
+        rule();     //gives discounted total after applying rule
+        this.actualTotalFn(); //gives actual total
     },
     //-----------------------------------------
-    Checkout() {
-      if (this.selectedCustomer.id == 1) {
-        this.rule3for2();
-        this.actualTotalFn();
-      } // SecondBite
-      if (this.selectedCustomer.id == 2) {
-        this.rulePriceDrop();
-        this.actualTotalFn();
-      } //AxilCofee
-      if (this.selectedCustomer.id == 3) {
-        this.rule5for4nPriceDrop();
-        this.actualTotalFn();
-      } //myer
-      if (this.selectedCustomer.id == 4) {
-        this.actualTotalFn();
-        this.discountedTotal=this.actualTotal
-      } //myer
-    },
     actualTotalFn() { // Total price of the items without Price Rules
-      var sum = 0;
-      this.selectedProducts.forEach(function (value, index) {
+      let sum = 0;
+      this.selectedProducts.forEach(function (value) {
         sum += value.price;
       });
       this.actualTotal = sum;
     },
     //======================RULES=============================
-    rule3for2() { //classic ads- 3 for 2
+    rule3for2() { //Second bit rule- classic ads- 3 for 2
       let sum = 0;
       let classic_count = 0;
       for (let i = 0; i < this.selectedProducts.length; i++) {
@@ -151,7 +137,7 @@ export default {
       }
       this.discountedTotal = sum;
     },
-    rulePriceDrop() { //
+    rulePriceDrop() { //AXILCOFFEE rule
       let sum = 0;
       let standout_count = 0;
       for (let i = 0; i < this.selectedProducts.length; i++) {
@@ -164,7 +150,7 @@ export default {
       }
       this.discountedTotal = sum;
     },
-    rule5for4nPriceDrop() { //
+    rule5for4nPriceDrop() { //MYER rule
       let sum = 0;
       let standout_count = 0;
       let premium_count = 0;
