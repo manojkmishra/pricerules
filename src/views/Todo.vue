@@ -91,7 +91,8 @@ export default {
         { id: 2, name: "AxilCofee" },
         { id: 3, name: "MYER" },
         { id: 4, name: "Default" },
-        { id: 5, name: "Jora" },
+        { id: 5, name: "JoraRule1" },
+        { id: 6, name: "JoraRule2" },
       ],
     };
   },
@@ -109,7 +110,8 @@ export default {
       if (b == 1) {  this.checkout(this.rule3for2) } // SecondBite 
       else if (b == 2) {  this.checkout(this.rulePriceDrop) } //axil coffee
       else if (b == 3) {  this.checkout(this.rule5for4nPriceDrop) } //myer
-      else if (b == 5) {  this.checkout(this.joraRule) } //jora
+      else if (b == 5) {  this.checkout(this.joraRule1) } //jora
+      else if (b == 6) {  this.checkout(this.joraRule2) } //jora
       else {  this.actualTotalFn();  this.discountedTotal=this.actualTotal } //default customers
     },
     checkout(rule){ //higher order function defn - taking rule fn as parameter
@@ -177,18 +179,16 @@ export default {
       }
       this.discountedTotal = sum;
     },
-    joraRule() { //AXILCOFFEE rule
+    joraRule1() { //AXILCOFFEE rule
       let sum = 0; let newcondition=0;
       let jora_count = 0; //4 or more check
-      console.log('this.selectedProducts=',this.selectedProducts)
-
       for (let i = 0; i < this.selectedProducts.length; i++) 
       {
         if (this.selectedProducts[i].id == "premium_ad") {
           jora_count++;
           if (jora_count >= 4) {
             sum += this.selectedProducts[i].price - 15;
-            if(jora_count=4){  sum -= 15*3;  };
+            //if(jora_count=4){  sum -= 15*3;  };
             continue;
           }
           else{
@@ -198,7 +198,26 @@ export default {
         }
         sum += this.selectedProducts[i].price;
       }
-      console.log('jora-sum=',this.discountedTotal)
+      this.discountedTotal = sum;
+    },
+     joraRule2() { 
+      let sum = 0; let jora_count = 0; 
+      for (let i = 0; i < this.selectedProducts.length; i++) 
+      {
+        if (this.selectedProducts[i].id == "premium_ad") {
+          jora_count++;
+          if (jora_count >= 4) {
+            sum += this.selectedProducts[i].price - 15;
+            if(jora_count==4)
+            {  sum = sum - 15*3; 
+            };
+            continue;
+          }
+          else{ sum += this.selectedProducts[i].price }
+          continue;
+        }
+        sum += this.selectedProducts[i].price;
+      }
       this.discountedTotal = sum;
     },
     //======================RULES FINISH=========================
