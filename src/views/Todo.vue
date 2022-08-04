@@ -91,6 +91,7 @@ export default {
         { id: 2, name: "AxilCofee" },
         { id: 3, name: "MYER" },
         { id: 4, name: "Default" },
+        { id: 5, name: "Jora" },
       ],
     };
   },
@@ -103,10 +104,12 @@ export default {
     },
     addproduct(a,b) {//a->product added, b->customer id
       this.selectedProducts.push(a);
+      console.log('addpr-customer',b)
       //higher order function checkout(rule) called
       if (b == 1) {  this.checkout(this.rule3for2) } // SecondBite 
       else if (b == 2) {  this.checkout(this.rulePriceDrop) } //axil coffee
       else if (b == 3) {  this.checkout(this.rule5for4nPriceDrop) } //myer
+      else if (b == 5) {  this.checkout(this.joraRule) } //jora
       else {  this.actualTotalFn();  this.discountedTotal=this.actualTotal } //default customers
     },
     checkout(rule){ //higher order function defn - taking rule fn as parameter
@@ -163,11 +166,39 @@ export default {
           }
         } else if (this.selectedProducts[i].id == "premium_ad") {
           premium_count++;
+          if (standout_count == 5) {
+            standout_count = 0;
+            continue;
+          }
           sum += this.selectedProducts[i].price - 5; //(items[i].price-5) ie 394.99-23=389.99
           continue;
         }
         sum += this.selectedProducts[i].price;
       }
+      this.discountedTotal = sum;
+    },
+    joraRule() { //AXILCOFFEE rule
+      let sum = 0; let newcondition=0;
+      let jora_count = 0; //4 or more check
+      console.log('this.selectedProducts=',this.selectedProducts)
+
+      for (let i = 0; i < this.selectedProducts.length; i++) 
+      {
+        if (this.selectedProducts[i].id == "premium_ad") {
+          jora_count++;
+          if (jora_count >= 4) {
+            sum += this.selectedProducts[i].price - 15;
+            if(jora_count=4){  sum -= 15*3;  };
+            continue;
+          }
+          else{
+            sum += this.selectedProducts[i].price
+          }
+          continue;
+        }
+        sum += this.selectedProducts[i].price;
+      }
+      console.log('jora-sum=',this.discountedTotal)
       this.discountedTotal = sum;
     },
     //======================RULES FINISH=========================
